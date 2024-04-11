@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<title>{{title}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+</head>
+    <body class="">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="">
+            <strong>{{message}}</strong>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <h1 class="text-center text-5xl">To-Do List</h1>
+
+        <div class="flex flex-col outline outline-black bg-gray-500 rounded-xl w-3/4 h-screen mt-5 ml-5">
+                {% for i in list %}
+                <div id="mydiv{{i.id}}" class="absolute draggable p-3 outline-black w-60 cursor-move z-9">
+                        <center><b>{{i.title}}</b></center>
+                        {{i.details}}
+                        <hr/>
+                        {{i.date}}
+                        <hr/>
+                        <br />
+                        <br />
+                        <form action="/del/{{i.id}}" method="POST">
+                        {% csrf_token %}
+                        <button value="remove" type="submit" class="outline-black"><span class=""></span>remove</button>
+                        </form>
+                </div>
+                {% endfor%}
+
+            <div class="absolute bg-gray-500 right-6 rounded-xl p-5">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{forms}}
+                    <center>
+                        <input type="submit" class="mt-3 bg-gray-600 text-white p-2 rounded-xl" value="submit" />
+                    </center>
+                </form>
+            </div>
+        </div>
+        <script>
+            class DraggableElement {
+                constructor(elementId) {
+                    this.element = document.getElementById(elementId);
+                    this.pos1 = 0;
+                    this.pos2 = 0;
+                    this.pos3 = 0;
+                    this.pos4 = 0;
+            
+                    // Bind event listener functions
+                    this.dragMouseDown = this.dragMouseDown.bind(this);
+                    this.elementDrag = this.elementDrag.bind(this);
+                    this.closeDragElement = this.closeDragElement.bind(this);
+            
+                    if (this.element) {
+                        this.element.addEventListener('mousedown', this.dragMouseDown);
+                    }
+                }
+            
+                dragMouseDown(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    // get the mouse cursor position at startup:
+                    this.pos3 = e.clientX;
+                    this.pos4 = e.clientY;
+                    document.addEventListener('mouseup', this.closeDragElement);
+                    // call a function whenever the cursor moves:
+                    document.addEventListener('mousemove', this.elementDrag);
+                }
+            
+                elementDrag(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    // calculate the new cursor position:
+                    this.pos1 = this.pos3 - e.clientX;
+                    this.pos2 = this.pos4 - e.clientY;
+                    this.pos3 = e.clientX;
+                    this.pos4 = e.clientY;
+                    // set the element's new position:
+                    this.element.style.top = (this.element.offsetTop - this.pos2) + "px";
+                    this.element.style.left = (this.element.offsetLeft - this.pos1) + "px";
+                }
+            
+                closeDragElement() {
+                    // stop moving when mouse button is released:
+                    document.removeEventListener('mouseup', this.closeDragElement);
+                    document.removeEventListener('mousemove', this.elementDrag);
+                }
+            }
+            
+            // Find all elements with the 'draggable' class
+            const draggableElement = document.querySelectorAll('.draggable');
+            console.log('jello')
+            // Make each draggable element draggable
+            draggableElement.forEach(element => {
+                new DraggableElement(element.id);
+            });
+        </script>
+    </body>
+
+</html>
